@@ -1,0 +1,12 @@
+{
+    "db1": {
+        "host": "localhost",
+        "database": "nodetodos",
+        "user": "postgres",
+        "password": "postgres",
+        "port": 5432
+    },
+    "rest": {
+        "port": 8888
+    }
+}

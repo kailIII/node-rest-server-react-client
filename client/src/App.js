@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Todos from './todos/Todos'
-import logo from './logo.svg';
-import './App.css';
+import Todos from './modules/todos/Todos'
+import logo from './assets/images/logo.svg';
+import './assets/css/App.css';
 
 class App extends Component {
 
@@ -15,7 +15,7 @@ class App extends Component {
                     <p>Calls REST API using axios js</p>
                 </div>
                 <hr />
-                <Todos/>
+                <Todos />
             </div>
         );
     }
