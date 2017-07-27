@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
 
+/**
+ * Todos list filter
+ * @type {Object}
+ */
 class TodoListFilter extends Component {
 
+    /**
+     * Render filters
+     * @return {[type]} [description]
+     */
     render() {
         return (
             <div>

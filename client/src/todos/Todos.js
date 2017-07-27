@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import AddTodo from './AddTodo'
 import TodoList from './TodoList'
+import TodosModel from './TodosModel'
 
+/**
+ * Todos component
+ * @type {Object}
+ */
 class Todos extends Component {
 
+    /**
+     * Initialize component with properties
+     * @param  {object} props The properties passed to this component
+     * @return {[type]}       [description]
+     */
     constructor(props) {
         super(props);
 
         // Initial data
-        this.defaultTodo = {id: '', text: '', complete: false};
         this.state = {
-            editing: this.defaultTodo,
+            editing: TodosModel.dispense(),
             todos: [],
             filter: 'all'
         }
@@ -27,37 +35,47 @@ class Todos extends Component {
         this.setEditingTodo = this.setEditingTodo.bind(this);
     }
 
-    // Load data
+    /**
+     * Load data when component is mounted
+     * @return {[type]} [description]
+     */
     componentDidMount() {
-        axios.get('http://localhost:8888/todos')
-        .then(res => {
-            if (res.status === 200) {
-                this.setState({ todos: res.data });
-            }
-        });
+        var self = this;
+        TodosModel.findAll((todos) => {
+            self.setState({ todos: todos });
+        })
       }
 
-    // Edit new todo
+    /**
+     * Set a new record in state
+     * @return {[type]} [description]
+     */
     create() {
         this.setState({
-            editing: this.defaultTodo
+            editing: TodosModel.dispense()
         });
     }
 
-    // Edit existing todo
-    edit(id) {
-        let i = this.state.todos.findIndex(todo => id === todo.id);
-        if (i !== -1) {
-            this.setState({
-                editing: this.state.todos[i]
-            });
-        }
+    /**
+     * Edit a record
+     * @param  {object} todo The record to be edited
+     * @return {[type]}      [description]
+     */
+    edit(todo) {
+        let i = this.state.todos.findIndex(item => item.id === todo.id);
+        this.setState({
+            editing: i !== -1 ? this.state.todos[i] : this.state.editing
+        });
     }
 
-    // Save local
+    /**
+     * Update local record
+     * @param  {object} todo The record to be updated
+     * @return {[type]}      [description]
+     */
     saveLocal(todo) {
-        let i, id = todo.id;
-        let todos = this.state.todos;
+        let i, todos = this.state.todos;
+        todo.id = parseInt(todo.id, 10);
         i = todos.findIndex(item => todo.id === item.id);
         if (i !== -1) {
             todos[i] = todo;
@@ -68,80 +86,94 @@ class Todos extends Component {
         this.create();
     }
 
-    // Save remote
+    /**
+     * Store record
+     * @return {[type]} [description]
+     */
     save() {
         var self = this;
         let todo = self.state.editing;
-        axios.post('http://localhost:8888/todos', todo)
-        .then(res => {
-            if (res.status === 200) {
-                self.saveLocal(res.data);
-            }
+        TodosModel.store(todo, (todo) => {
+            self.saveLocal(todo);
+        })
+    }
+
+    /**
+     * Update todo as complete
+     * @param  {object} todo The record to be marked as completed
+     * @return {[type]}      [description]
+     */
+    toggle(todo) {
+        var self = this;
+        todo.complete = !(todo.complete);
+        TodosModel.store(todo, (todo) => {
+            self.saveLocal(todo);
         });
     }
 
-    // Mark todo as complete
-    toggle(id) {
-        var self = this;
+    /**
+     * Delete local record
+     * @param  {object} todo The record to be locally removed
+     * @return {[type]}      [description]
+     */
+    delLocal(todo) {
         let todos = this.state.todos;
-        let i = todos.findIndex(todo => id === todo.id);
-        if (i !== -1) {
-            todos[i].complete = !(todos[i].complete);
-            axios.post('http://localhost:8888/todos', todos[i])
-            .then(res => {
-                if (res.status === 200) {
-                    self.saveLocal(res.data);
-                    this.setState({
-                        todos: todos
-                    });
-                }
-            });
-        }
+        let i = todos.findIndex(item => item.id === todo.id);
+        todos.splice(i, 1);
+        this.setState({
+            editing: this.state.editing.id === todo.id ?
+                this.defaultTodo : this.state.editing,
+            todos: todos
+        });
     }
 
-    // Delete todo
-    del(id) {
+    /**
+     * Delete record
+     * @param  {object} todo The record to be deleted
+     * @return {[type]}      [description]
+     */
+    del(todo) {
         var self = this;
-        let todos = this.state.todos;
-        let i = todos.findIndex(todo => id === todo.id);
-        if (i !== -1) {
-            axios.delete('http://localhost:8888/todos/' + todos[i].id)
-            .then(res => {
-                if (res.status === 200) {
-                    if (self.state.editing.id === todos[i].id) {
-                        self.setState({
-                            editing: self.defaultTodo
-                        });
-                    }
-                    todos.splice(i, 1);
-                    self.setState({todos: todos});
-                }
-            });
-        }
+        TodosModel.remove(todo, () => {
+            self.delLocal(todo)
+        });
     }
 
-    // Filter list
+    /**
+     * Set current filter
+     * @param {String} type The filter string
+     */
     setFilter(type) {
         this.setState({
             filter: type
         })
     }
 
-    // Clear completed
+    /**
+     * Clear completed records
+     * @return {[type]} [description]
+     */
     clearCompleted() {
-        let todos = this.state.todos;
-        todos = todos.filter(todo => !todo.complete);
-        this.setState({todos: todos});
+        var self = this;
+        TodosModel.clearCompleted((todos) => {
+            self.setState({todos: todos});
+        });
     }
 
-    // Save current todo state
+    /**
+     * Save editing todo
+     * @param {[type]} todo [description]
+     */
     setEditingTodo(todo) {
         this.setState({
             editing: todo
         })
     }
 
-    // Render todo app
+    /**
+     * Render component
+     * @return {[type]} [description]
+     */
     render() {
         return (
             <div className="todos">

@@ -9,7 +9,7 @@ var server = restify.createServer();
 // PLugins
 server.use(restify.plugins.bodyParser({ mapParams: false }));
 
-//In case of client axios js, it can make a pre-flight OPTIONS request
+//In case of pre-flight OPTIONS request
 server.use(restify.plugins.fullResponse());
 server.opts(/.*/i, function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*')
@@ -21,15 +21,16 @@ server.opts(/.*/i, function (req, res, next) {
 	next();
 });
 
-// Routes
+// Home route
 server.get('/', function (req, res, next) {
-    res.send('Welcome to REST server');
+    res.send('Welcome to TODOS REST server, using PostgreSQL as database');
     next();
 });
 
-// Load todos routes
+// Load todos API
 todos.setApi(server);
 
+// Finally, start server
 server.listen(8888, function() {
   console.log('%s listening at %s', server.name, server.url);
 });
