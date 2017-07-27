@@ -25,7 +25,13 @@ class TodosModel {
      * @return {[type]}      [description]
      */
     static findAll(cb) {
-        axios.get(endpoint)
+        var options = {
+            headers: {
+                'X-Authorization': TodosModel.auth_token
+            }
+        }
+        console.log('request options', options);
+        axios.get(endpoint, options)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -40,7 +46,12 @@ class TodosModel {
      * @return {[type]}        [description]
      */
     static store(todo, cb) {
-        axios.post(endpoint, todo)
+        var options = {
+            headers: {
+                'X-Authorization': TodosModel.auth_token
+            }
+        }
+        axios.post(endpoint, todo, options)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -55,7 +66,12 @@ class TodosModel {
      * @return {[type]}        [description]
      */
     static remove(todo, cb) {
-        axios.delete(endpoint + '/' + todo.id)
+        var options = {
+            headers: {
+                'X-Authorization': TodosModel.auth_token
+            }
+        }
+        axios.delete(endpoint + '/' + todo.id, options)
         .then(res => {
             if (res.status === 200) {
                 cb();
@@ -69,7 +85,12 @@ class TodosModel {
      * @return {[type]}      [description]
      */
     static clearCompleted(cb) {
-        axios.get(endpoint + '/clear/completed')
+        var options = {
+            headers: {
+                'X-Authorization': TodosModel.auth_token
+            }
+        }
+        axios.get(endpoint + '/clear/completed', options)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -77,5 +98,7 @@ class TodosModel {
         });
     }
 }
+
+TodosModel.auth_token = '';
 
 export default TodosModel

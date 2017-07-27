@@ -1,12 +1,12 @@
 
-
 /**
  * Todos model
  */
 class TodosApi {
 
-    constructor(model) {
+    constructor(model, auth = false) {
         this.model = model;
+        this.auth = auth;
     }
 
     /**
@@ -87,6 +87,18 @@ class TodosApi {
      * @param {[type]} server [description]
      */
     setApi(server) {
+
+        // Authorization middleware
+        if (this.auth) {
+            server.get(/todos/i, (req, res, next) => {
+                console.log('auth middleware');
+                this.auth.isAuthorized(req.headers['x-authorization'], (user) => {
+                    console.log('valid user', user);
+                	next();
+                });
+            });
+        }
+
         server.get('/todos', this.httpFindAll.bind(this));
         server.get('/todos/:id', this.httpFind.bind(this));
         server.post('/todos', this.httpPost.bind(this));

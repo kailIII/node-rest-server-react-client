@@ -36,15 +36,37 @@ class Todos extends Component {
     }
 
     /**
-     * Load data when component is mounted
-     * @return {[type]} [description]
+     * Load records on auth_token
+     * @param  {object} nextProps The next component props
+     * @return {[type]}      [description]
+     */
+    loadData(auth_token) {
+        if (auth_token !== '') {
+            TodosModel.auth_token = auth_token;
+            TodosModel.findAll((todos) => {
+                this.setState({ todos: todos });
+            });
+        } else {
+            this.setState({ todos: [] });
+        }
+    }
+
+    /**
+     * Load data on component mount
+     * @return {[type]}      [description]
      */
     componentDidMount() {
-        var self = this;
-        TodosModel.findAll((todos) => {
-            self.setState({ todos: todos });
-        })
-      }
+        this.loadData(this.props.auth_token);
+    }
+
+    /**
+     * Load records on auth_token
+     * @param  {object} nextProps The next component props
+     * @return {[type]}      [description]
+     */
+    componentWillReceiveProps(nextProps) {
+        this.loadData(nextProps.auth_token);
+    }
 
     /**
      * Set a new record in state
@@ -146,7 +168,7 @@ class Todos extends Component {
     setFilter(type) {
         this.setState({
             filter: type
-        })
+        });
     }
 
     /**
@@ -167,7 +189,7 @@ class Todos extends Component {
     setEditingTodo(todo) {
         this.setState({
             editing: todo
-        })
+        });
     }
 
     /**

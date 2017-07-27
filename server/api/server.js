@@ -13,7 +13,7 @@ server.opts(/.*/i, function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Allow', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD')
-    res.header('Access-Control-Allow-Headers', 'content-type')
+    res.header('Access-Control-Allow-Headers', 'content-type, x-authorization')
     res.header('Access-Control-Max-Age', 86400)
 	res.send(200);
 	next();

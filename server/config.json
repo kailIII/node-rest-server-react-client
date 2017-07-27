@@ -8,5 +8,9 @@
     },
     "rest": {
         "port": 8888
+    },
+    "encrypt": {
+        "salt_rounds": 20,
+        "salt": "$2a$10$PW5kLAUpQRJnxRy12pXmsu"
     }
 }

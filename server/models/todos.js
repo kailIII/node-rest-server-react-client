@@ -1,17 +1,14 @@
-
-const { Pool, Client } = require('pg')
-const config = require('../config');
-
-/**
- * Init database connection
- * @type {Pool}
- */
-const pool = new Pool(config.db1);
-
 /**
  * Todos model
  */
 class Todos {
+
+    /**
+     * Init Todos model
+     */
+    constructor(db) {
+        this.db = db;
+    }
 
     /**
      * Get all records
@@ -19,7 +16,7 @@ class Todos {
      * @return {undefined}      [description]
      */
     findAll(cb) {
-        pool.query('SELECT * FROM todos', (err, res) => {
+        this.db.query('SELECT * FROM todos', (err, res) => {
             if (!err) {
                 cb(res.rows);
             } else {
@@ -35,7 +32,7 @@ class Todos {
      * @return {undefined}  [description]
      */
     find(id, cb) {
-        pool.query('SELECT * FROM todos WHERE id = $1', [id], (err, res) => {
+        this.db.query('SELECT * FROM todos WHERE id = $1', [id], (err, res) => {
             if (!err && res.rows.length) {
                 cb(res.rows[0]);
             } else {
@@ -59,7 +56,7 @@ class Todos {
             sql = 'INSERT INTO todos (text, complete) VALUES ($1, $2) RETURNING id';
             values = [todo.text, todo.complete];
         }
-        pool.query(sql, values, (err, res) => {
+        this.db.query(sql, values, (err, res) => {
             if (!err) {
                 if (todo.id === '') {
                     todo.id = res.rows[0].id;
@@ -78,7 +75,7 @@ class Todos {
      * @return {undefined}  [description]
      */
     remove(id, cb) {
-        pool.query('DELETE FROM todos WHERE id = $1', [id], (err, res) => {
+        this.db.query('DELETE FROM todos WHERE id = $1', [id], (err, res) => {
             if (!err) {
                 cb();
             } else {
@@ -93,7 +90,7 @@ class Todos {
      * @return {undefined}      [description]
      */
     clearCompleted(cb) {
-        pool.query('DELETE FROM todos WHERE complete', (err, res) => {
+        this.db.query('DELETE FROM todos WHERE complete', (err, res) => {
             cb();
         });
     }
