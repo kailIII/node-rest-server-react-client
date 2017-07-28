@@ -16,7 +16,7 @@ Using axios as HTTP client
 ```
     $ cd server
     $ npm install
-    $ node index.js
+    $ node src/index.js
     $ cd ../client
     $ npm install
     $ npm run start
