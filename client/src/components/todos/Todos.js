@@ -38,7 +38,6 @@ class Todos extends Component {
      * @return {[type]}      [description]
      */
     edit(todo) {
-        console.log('edit', todo);
         this.setState({
             editing: todo
         });
@@ -52,7 +51,6 @@ class Todos extends Component {
     addTodo(todo) {
         let todos = this.state.todos;
         todos.push(todo);
-        console.log('add', todos);
         this.setState({todos: todos});
     }
 
@@ -65,7 +63,6 @@ class Todos extends Component {
         let i, todos = this.state.todos;
         i = todos.findIndex(item => item.id === todo.id);
         todos[i] = todo;
-        console.log('update', todos);
         this.setState({todos: todos});
     }
 
@@ -74,12 +71,10 @@ class Todos extends Component {
      * @return {[type]} [description]
      */
     save(todo) {
-        console.log('save', todo);
         var result = Object.assign({}, todo);
         if (!result.id) {
             result.id = Math.floor(Math.random() * 1000000) + 1 ;
         }
-        console.log(result);
         todo.id ? this.updateTodo(result) : this.addTodo(result);
 
         // Reset editing
