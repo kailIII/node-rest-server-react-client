@@ -16,7 +16,7 @@ class TodosApi {
      * @param  {Function} next [description]
      * @return {[type]}        [description]
      */
-    httpFindAll(req, res, next) {
+    findAll(req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
         this.model.findAll((todos) => {
             res.send(todos);
@@ -31,7 +31,7 @@ class TodosApi {
      * @param  {Function} next [description]
      * @return {[type]}        [description]
      */
-    httpFind(req, res, next) {
+    find(req, res, next) {
         this.model.find(req.params.id, (todo) => {
             res.send(todo);
             next();
@@ -45,7 +45,7 @@ class TodosApi {
      * @param  {Function} next [description]
      * @return {[type]}        [description]
      */
-    httpPost(req, res, next) {
+    store(req, res, next) {
         this.model.store(req.body, (todo) => {
             res.header('Access-Control-Allow-Origin', '*')
             res.send(todo);
@@ -60,7 +60,7 @@ class TodosApi {
      * @param  {Function} next [description]
      * @return {[type]}        [description]
      */
-    httpDelete(req, res, next) {
+    remove(req, res, next) {
         this.model.remove(req.params.id, () => {
             res.header('Access-Control-Allow-Origin', '*')
             res.send(200);
@@ -75,10 +75,9 @@ class TodosApi {
      * @param  {Function} next [description]
      * @return {[type]}        [description]
      */
-    httpClearCompleted(req, res, next) {
-        var self = this;
-        self.clearCompleted(() => {
-            self.httpFindAll(req, res, next);
+    clearCompleted(req, res, next) {
+        this.model.clearCompleted(() => {
+            this.findAll(req, res, next);
         });
     }
 
@@ -90,20 +89,27 @@ class TodosApi {
 
         // Authorization middleware
         if (this.auth) {
-            server.get(/todos/i, (req, res, next) => {
-                console.log('auth middleware');
-                this.auth.isAuthorized(req.headers['x-authorization'], (user) => {
-                    console.log('valid user', user);
-                	next();
-                });
+            server.use((req, res, next) => {
+                if (req.url.startsWith('/todos')) {
+                    this.auth.isAuthorized(req.headers['x-authorization'], (result) => {
+                        if (result) {
+                            return next();
+                        } else {
+                            res.header('Access-Control-Allow-Origin', '*');
+                            res.send(401);
+                        }
+                    });
+                } else {
+                    return next()
+                }
             });
         }
 
-        server.get('/todos', this.httpFindAll.bind(this));
-        server.get('/todos/:id', this.httpFind.bind(this));
-        server.post('/todos', this.httpPost.bind(this));
-        server.del('/todos/:id', this.httpDelete.bind(this));
-        server.get('/todos/clear/:filter', this.httpClearCompleted.bind(this));
+        server.get('/todos', this.findAll.bind(this));
+        server.get('/todos/:id', this.find.bind(this));
+        server.post('/todos', this.store.bind(this));
+        server.del('/todos/:id', this.remove.bind(this));
+        server.get('/todos/clear/:filter', this.clearCompleted.bind(this));
     }
 }
 

@@ -16,7 +16,7 @@ class TodosModel {
      * @return {object} The new record as object
      */
     static dispense() {
-        return {id: '', text: '', complete: false};
+        return {id: '', text: '', status: 'active'};
     }
 
     /**
@@ -30,12 +30,16 @@ class TodosModel {
                 'X-Authorization': TodosModel.auth_token
             }
         }
-        console.log('request options', options);
         axios.get(endpoint, options)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
+            } else {
+                cb([]);
             }
+        })
+        .catch((error) => {
+            cb([]);
         });
     }
 

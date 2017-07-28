@@ -50,15 +50,15 @@ class Todos {
     store(todo, cb) {
         var i, sql, values;
         if (todo.id) {
-            sql = 'UPDATE todos SET text = $1, complete = $2 WHERE id = $3';
-            values = [todo.text, todo.complete, todo.id];
+            sql = 'UPDATE todos SET text = $1, status = $2 WHERE id = $3';
+            values = [todo.text, todo.status, todo.id];
         } else {
-            sql = 'INSERT INTO todos (text, complete) VALUES ($1, $2) RETURNING id';
-            values = [todo.text, todo.complete];
+            sql = 'INSERT INTO todos (text, status) VALUES ($1, $2) RETURNING id';
+            values = [todo.text, todo.status];
         }
         this.db.query(sql, values, (err, res) => {
             if (!err) {
-                if (todo.id === '') {
+                if (!todo.id) {
                     todo.id = res.rows[0].id;
                 }
                 cb(todo);
@@ -90,7 +90,8 @@ class Todos {
      * @return {undefined}      [description]
      */
     clearCompleted(cb) {
-        this.db.query('DELETE FROM todos WHERE complete', (err, res) => {
+        var values = ['completed'];
+        this.db.query('DELETE FROM todos WHERE status = $1', values, (err, res) => {
             cb();
         });
     }

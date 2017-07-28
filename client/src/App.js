@@ -1,22 +1,31 @@
 import React, { Component } from 'react';
 import Cookies from 'universal-cookie';
-import Auth from './modules/auth/Auth'
-import Todos from './modules/todos/Todos'
+import Auth from './components/auth/Auth'
+import TodosRest from './components/todos/TodosRest'
 import logo from './assets/images/logo.svg';
 import './assets/css/App.css';
 
 const cookies = new Cookies();
 
+/**
+ * Main Application
+ * @type {[type]}
+ */
 class App extends Component {
 
+    /**
+     * Init application component
+     * @param  {Object} props [description]
+     * @return {[type]}       [description]
+     */
     constructor(props) {
         super(props);
 
         // Initial data
         var webcookie = cookies.get('nodetodos');
         this.state = {
-            username: webcookie.username ? webcookie.username : '',
-            auth_token: webcookie.auth_token ? webcookie.auth_token : ''
+            username: webcookie ? webcookie.username : '',
+            auth_token: webcookie ? webcookie.auth_token : ''
         }
 
         // Component methods
@@ -24,14 +33,27 @@ class App extends Component {
         this.logout = this.logout.bind(this);
     }
 
+    /**
+     * Login user into application
+     * @param  {String} username   [description]
+     * @param  {String} auth_token [description]
+     * @return {[type]}            [description]
+     */
     login(username, auth_token) {
-        cookies.set('nodetodos', {username, auth_token}, { path: '/' });
+        var expires = 86400000; // 24 hours
+        var d = new Date();
+        d.setTime(d.getTime() + expires);
+        cookies.set('nodetodos', {username, auth_token}, { path: '/', expires: d });
         this.setState({
             username: username,
             auth_token: auth_token
         });
     }
 
+    /**
+     * Logout user
+     * @return {[type]} [description]
+     */
     logout() {
         cookies.set('nodetodos', {}, { path: '/' });
         this.setState({
@@ -40,7 +62,10 @@ class App extends Component {
         });
     }
 
-    // Render todo app
+    /**
+     * Render component
+     * @return {[type]} [description]
+     */
     render() {
         return (
             <div>
@@ -50,7 +75,7 @@ class App extends Component {
                     <p>Calls REST API using axios js</p>
                 </div>
                 <hr />
-                <Todos auth_token={this.state.auth_token} />
+                <TodosRest auth_token={this.state.auth_token} />
                 <Auth username={this.state.username}
                     login={this.login}
                     logout={this.logout} />

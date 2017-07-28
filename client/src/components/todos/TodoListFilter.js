@@ -16,11 +16,11 @@ class TodoListFilter extends Component {
                 {this.props.filters.map((filter, i) => (
                     <button key={i} onClick={this.props.setFilter.bind(null, filter)}
                         disabled={this.props.filter === filter}
-                        >{filter}</button>
+                    >{filter}</button>
                 ))}
                 {' '}
                 <button onClick={this.props.clearCompleted}
-                    >clear completed</button>
+                >clear completed</button>
             </div>
         );
     }

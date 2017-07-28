@@ -4,6 +4,6 @@ body {
   font-family: sans-serif;
 }
 
-.complete {
+.completed {
     text-decoration: line-through;
 }

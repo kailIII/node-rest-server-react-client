@@ -21,12 +21,14 @@ class Auth {
      * @param  {Function}   cb Async return
      * @return {undefined}  [description]
      */
-    isTokenValid(auth_taken, cb) {
+    isTokenValid(auth_token, cb) {
         var sql = 'SELECT * FROM users WHERE auth_token = $1',
             values = [auth_token];
         this.db.query(sql, values, (err, res) => {
             if (!err && res.rows.length) {
                 cb(res.rows[0]);
+            } else {
+                cb({})
             }
         })
     }
@@ -38,7 +40,7 @@ class Auth {
      * @return {undefined}  [description]
      */
     login(user, cb) {
-        var sql = 'SELECT username FROM users WHERE username = $1 AND password = $2',
+        var sql = 'SELECT id, username FROM users WHERE username = $1 AND password = $2',
             values = [user.username];
         this.encrypt(user.password, false, (err, hash) => {
             values.push(hash);

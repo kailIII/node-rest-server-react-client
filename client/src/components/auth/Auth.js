@@ -30,7 +30,6 @@ class Auth extends Component {
             password: this.refs.loginPassword.value
         }
         AuthModel.login(user, (result) => {
-            console.log(result);
             if (result.auth_token) {
                 this.props.login(user.username, result.auth_token);
             }
@@ -59,7 +58,7 @@ class Auth extends Component {
      * @return {[type]} [description]
      */
     render() {
-        if (this.props.username === '') {
+        if (!this.props.username) {
             return (
                 <div className="auth">
                     <h4>Login</h4>

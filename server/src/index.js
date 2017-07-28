@@ -18,8 +18,8 @@ const auth = new AuthApi(new Auth(pool));
 auth.setApi(server);
 
 // Load todos API
-const todos = new TodosApi(new Todos(pool));
-todos.setApi(server, auth);
+const todos = new TodosApi(new Todos(pool), auth);
+todos.setApi(server);
 
 // Finally, start server
 server.listen(config.rest.port, function() {
