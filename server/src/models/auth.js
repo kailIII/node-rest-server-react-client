@@ -21,9 +21,9 @@ class Auth {
      * @param  {Function}   cb Async return
      * @return {undefined}  [description]
      */
-    isTokenValid(auth_token, cb) {
-        var sql = 'SELECT * FROM users WHERE auth_token = $1',
-            values = [auth_token];
+    isTokenValid(auth_token, ip, cb) {
+        var sql = 'SELECT * FROM users WHERE auth_token = $1 AND auth_ip = $2',
+            values = [auth_token, ip];
         this.db.query(sql, values, (err, res) => {
             if (!err && res.rows.length) {
                 cb(res.rows[0]);
@@ -39,7 +39,7 @@ class Auth {
      * @param  {Function}   cb Async return
      * @return {undefined}  [description]
      */
-    login(user, cb) {
+    login(user, ip, cb) {
         var sql = 'SELECT id, username FROM users WHERE username = $1 AND password = $2',
             values = [user.username];
         this.encrypt(user.password, false, (err, hash) => {
@@ -48,7 +48,7 @@ class Auth {
                 if (!err && res.rows.length) {
                     user = res.rows[0];
                     user['auth_token'] = this.generateAuthToken();
-                    this.storeToken(user, user.auth_token, () => {
+                    this.storeToken(user, user.auth_token, ip, () => {
                         cb({auth_token: user.auth_token});
                     });
                 } else {
@@ -109,9 +109,9 @@ class Auth {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    storeToken(user, auth_token, cb) {
-        var sql= 'UPDATE users SET auth_token = $1 WHERE id = $2',
-            values = [auth_token, user.id];
+    storeToken(user, auth_token, ip, cb) {
+        var sql= 'UPDATE users SET auth_token = $1, auth_ip = $2 WHERE id = $3',
+            values = [auth_token, ip, user.id];
         this.db.query(sql, values, (err, res) => {
             if (!err) {
                 cb(user);

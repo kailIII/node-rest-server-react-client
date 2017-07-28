@@ -17,8 +17,8 @@ class AuthApi {
      * @param  {Function} cb Async return
      * @return {[type]}        [description]
      */
-    isAuthorized(auth_token, cb) {
-        this.model.isTokenValid(auth_token, (user) => {
+    isAuthorized(auth_token, ip, cb) {
+        this.model.isTokenValid(auth_token, ip, (user) => {
             cb(user.id ? true : false);
         });
     }
@@ -31,7 +31,8 @@ class AuthApi {
      * @return {[type]}        [description]
      */
     login(req, res, next) {
-        this.model.login(req.body, (result) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        this.model.login(req.body, ip, (result) => {
             res.header('Access-Control-Allow-Origin', '*')
             res.send(result);
             next();

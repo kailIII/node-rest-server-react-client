@@ -91,7 +91,8 @@ class TodosApi {
         if (this.auth) {
             server.use((req, res, next) => {
                 if (req.url.startsWith('/todos')) {
-                    this.auth.isAuthorized(req.headers['x-authorization'], (result) => {
+                    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+                    this.auth.isAuthorized(req.headers['x-authorization'], ip, (result) => {
                         if (result) {
                             return next();
                         } else {
