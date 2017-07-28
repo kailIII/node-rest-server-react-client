@@ -1,0 +1,62 @@
+
+header {
+    display: block;
+    height: 44px;
+    background-color: black;
+    color: #f0f0f0;
+    overflow: hidden;
+}
+
+header:after, header nav:after {
+    clear: both;
+}
+
+header nav {
+    display: block;
+    height: auto !important;
+}
+
+header ul {
+    float: left;
+    margin: 0;
+    padding: 0;
+    background-color: inherit;
+    color: inherit;
+}
+
+header nav li {
+    display: block;
+    float: left;
+    position: relative;
+    font-family: sans-serif;
+    font-size: 20px;
+    background-color: inherit;
+    color: inherit;
+}
+
+header nav li:hover {
+    background-color: #303030;
+    color: white;
+}
+
+header nav li > a {
+    position: relative;
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    font-family: sans-serif;
+    font-size: 20px;
+    background-color: inherit;
+    color: inherit;
+}
+
+header nav li > button {
+    border: 0;
+    padding: 10px;
+    background-color: transparent;
+    font-family: sans-serif;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: inherit;
+    color: inherit;
+}

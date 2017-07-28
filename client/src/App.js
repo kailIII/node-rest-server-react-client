@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
+import { Switch, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Auth from './components/auth/Auth'
-import TodosRest from './components/todos/TodosRest'
-import logo from './assets/images/logo.svg';
-import './assets/css/App.css';
+import Header from './Header'
+import PageTodos from './PageTodos'
+import PageAuth from './PageAuth'
 
 const cookies = new Cookies();
 
 /**
- * Main Application
+ * Other page example
  * @type {[type]}
  */
 class App extends Component {
@@ -69,16 +69,17 @@ class App extends Component {
     render() {
         return (
             <div>
-                <div className="App App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h2>My React TODOS example</h2>
-                    <p>Calls REST API using axios js</p>
-                </div>
-                <hr />
-                <TodosRest auth_token={this.state.auth_token} />
-                <Auth username={this.state.username}
-                    login={this.login}
+                <Header username={this.state.username}
                     logout={this.logout} />
+                <Switch>
+                    <Route exact path="/" render={() => (
+                        <PageTodos auth_token={this.state.auth_token} />
+                    )} />
+                    <Route path="/login" render={() => (
+                        <PageAuth login={this.login}
+                            username={this.state.username} />
+                    )} />
+                </Switch>
             </div>
         );
     }
