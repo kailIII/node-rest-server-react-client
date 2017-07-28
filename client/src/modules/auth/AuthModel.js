@@ -1,8 +1,6 @@
 
 import axios from 'axios';
 
-const endpoint = 'http://localhost:8888/auth';
-
 /**
  * Auth model
  *
@@ -11,11 +9,15 @@ const endpoint = 'http://localhost:8888/auth';
  */
 class AuthModel {
 
+    constructor() {
+        this.endpoint = 'http://localhost:8888/auth';
+    }
+
     /**
      * Dispense a new record
      * @return {object} The new record as object
      */
-    static dispense() {
+    dispense() {
         return {id: '', username: ''};
     }
 
@@ -24,8 +26,8 @@ class AuthModel {
      * @param  {Function} cb Async return
      * @return {[type]}      [description]
      */
-    static login(user, cb) {
-        axios.post(endpoint + '/login', user)
+    login(user, cb) {
+        axios.post(this.endpoint + '/login', user)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -39,8 +41,8 @@ class AuthModel {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    static register(user, cb) {
-        axios.post(endpoint + '/register', user)
+    register(user, cb) {
+        axios.post(this.endpoint + '/register', user)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import './assets/css/Header.css';
+import '../../../assets/css/Header.css';
 
 /**
  * Other page example

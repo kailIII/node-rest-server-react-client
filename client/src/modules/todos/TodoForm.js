@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TodosModel from './TodosModel'
+import TodoFormComponent from './components/TodoForm'
 
 /**
  * Add todos component
@@ -16,6 +17,9 @@ class TodoForm extends Component {
         super(props);
         this.state = this.props.editing;
 
+        // Dependencies
+        this.model = new TodosModel();
+
         // Component methods
         this.updateLocalTodo = this.updateLocalTodo.bind(this);
         this.saveTodo = this.saveTodo.bind(this);
@@ -23,24 +27,22 @@ class TodoForm extends Component {
     }
 
     /**
-     * On receive new props (on edit todo)
+     * On receive new props (on edit)
      * @param  {object} nextProps The next component props
      * @return {[type]}      [description]
      */
     componentWillReceiveProps(nextProps) {
-        if (nextProps.editing && nextProps.editing.id !== this.props.id) {
-            this.setState(nextProps.editing);
-        }
+        this.setState(nextProps.editing);
     }
 
     /**
      * Save current state of editing todo
      */
-    updateLocalTodo() {
+    updateLocalTodo(refs) {
         var todo = {
-            id: parseInt(this.refs.id.value, 10),
-            status: this.refs.status.value,
-            text: this.refs.text.value
+            id: parseInt(refs.id.value, 10),
+            status: refs.status.value,
+            text: refs.text.value
         };
         this.setState(todo);
     }
@@ -63,7 +65,7 @@ class TodoForm extends Component {
      * @return {[type]} [description]
      */
     newTodo() {
-        this.setState(TodosModel.dispense());
+        this.setState(this.model.dispense());
     }
 
     /**
@@ -72,16 +74,14 @@ class TodoForm extends Component {
      */
     render() {
         return (
-            <form onSubmit={(e) => {e.preventDefault(); this.saveTodo();}}>
-                <label>Add/Edit Todo</label>
-                <input type="hidden" ref="id" value={this.state.id} />
-                <input type="hidden" ref="status" value={this.state.status} />
-                <input type="text" ref="text" value={this.state.text}
-                    placeholder="Enter todo..."
-                    onChange={this.updateLocalTodo} />
-                <button type="submit">Save</button>
-                <a href="" onClick={(e) => {e.preventDefault(); this.newTodo();}}>new</a>
-            </form>
+            <TodoFormComponent
+                id={this.state.id}
+                status={this.state.status}
+                text={this.state.text}
+                save={this.saveTodo}
+                reset={this.newTodo}
+                update={this.updateLocalTodo}
+            />
         );
     }
 }

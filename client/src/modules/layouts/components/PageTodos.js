@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import TodosRest from './components/todos/TodosRest'
-import logo from './assets/images/logo.svg';
-import './assets/css/App.css';
+import TodosRest from '../../../modules/todos/TodosRest'
+import logo from '../../../assets/images/logo.svg';
+import '../../../assets/css/App.css';
 
 /**
  * Main Application

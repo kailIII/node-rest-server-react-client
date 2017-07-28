@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import TodoForm from './TodoForm'
-import TodoList from './TodoList'
+import TodosComponent from './components/Todos'
 import TodosModel from './TodosModel'
 
 /**
@@ -17,19 +16,36 @@ class Todos extends Component {
     constructor(props) {
         super(props);
 
+        // Dependencies
+        this.model = new TodosModel();
+
         // Initial data
         this.state = {
-            editing: TodosModel.dispense(),
+            editing: this.model.dispense(),
             todos: [],
             filter: 'all'
         }
 
         // Component methods
+        this.toggle = this.toggle.bind(this);
         this.edit = this.edit.bind(this);
         this.save = this.save.bind(this);
         this.del = this.del.bind(this);
         this.setFilter = this.setFilter.bind(this);
         this.clearCompleted = this.clearCompleted.bind(this);
+    }
+
+    /**
+     * Update todo as complete
+     * @return {[type]}      [description]
+     */
+    toggle(todo) {
+        var newTodo = {
+            id: todo.id,
+            status: todo.status === 'active' ? 'completed' : 'active',
+            text: todo.text
+        };
+        this.save(newTodo);
     }
 
     /**
@@ -44,50 +60,16 @@ class Todos extends Component {
     }
 
     /**
-     * Insert local record
-     * @param  {object} todo The record to be updated
-     * @return {[type]}      [description]
-     */
-    addTodo(todo) {
-        let todos = this.state.todos;
-        todos.push(todo);
-        this.setState({todos: todos});
-    }
-
-    /**
-     * Update local record
-     * @param  {object} todo The record to be updated
-     * @return {[type]}      [description]
-     */
-    updateTodo(todo) {
-        let i, todos = this.state.todos;
-        i = todos.findIndex(item => item.id === todo.id);
-        todos[i] = todo;
-        this.setState({todos: todos});
-    }
-
-    /**
      * Store record
      * @return {[type]} [description]
      */
     save(todo) {
         var result = Object.assign({}, todo);
         if (!result.id) {
-            result.id = Math.floor(Math.random() * 1000000) + 1 ;
+            result.id = this.model.generateId();
         }
         todo.id ? this.updateTodo(result) : this.addTodo(result);
-
-        // Reset editing
-        this.setState({editing: TodosModel.dispense()});
-    }
-
-    /**
-     * Update todo as complete
-     * @param  {object} todo The record to be marked as completed
-     * @return {[type]}      [description]
-     */
-    toggle(todo) {
-        TodosModel.store(todo);
+        this.edit(this.model.dispense());
     }
 
     /**
@@ -100,7 +82,7 @@ class Todos extends Component {
         todos.splice(i, 1);
         this.setState({
             editing: this.state.editing && this.state.editing.id === todo.id ?
-                TodosModel.dispense() : this.state.editing,
+                this.model.dispense() : this.state.editing,
             todos: todos
         });
     }
@@ -134,27 +116,49 @@ class Todos extends Component {
     }
 
     /**
+     * Insert local record
+     * @param  {object} todo The record to be updated
+     * @return {[type]}      [description]
+     */
+    addTodo(todo) {
+        let todos = this.state.todos;
+        todos.push(todo);
+        this.setState({todos: todos});
+    }
+
+    /**
+     * Update local record
+     * @param  {object} todo The record to be updated
+     * @return {[type]}      [description]
+     */
+    updateTodo(todo) {
+        let i, todos = this.state.todos;
+        i = todos.findIndex(item => item.id === todo.id);
+        todos[i] = todo;
+        this.setState({todos: todos});
+    }
+
+    /**
      * Render component
      * @return {[type]} [description]
      */
     render() {
+        var items = this.state.todos.filter(item => {
+            return !(this.state.filter !== 'all' && item.status !== this.state.filter);
+        });
         return (
-            <div className="todos">
-                <TodoForm editing={this.state.editing}
-                    save={this.save}
-                />
-                <TodoList items={this.state.todos}
-                    editing={this.state.editing}
-                    edit={this.edit}
-                    del={this.del}
-                    save={this.save}
-                    toggle={this.toggle}
-                    filter={this.state.filter}
-                    setFilter={this.setFilter}
-                    filters={['all', 'active', 'completed']}
-                    clearCompleted={this.clearCompleted}
-                />
-            </div>
+            <TodosComponent
+                editing={this.state.editing}
+                save={this.save}
+                items={items}
+                edit={this.edit}
+                del={this.del}
+                toggle={this.toggle}
+                clearCompleted={this.clearCompleted}
+                filter={this.state.filter}
+                setFilter={this.setFilter}
+                filters={['all', 'active', 'completed']}
+            />
         );
     }
 }

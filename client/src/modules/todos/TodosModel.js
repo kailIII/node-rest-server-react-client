@@ -11,11 +11,28 @@ const endpoint = 'http://localhost:8888/todos';
  */
 class TodosModel {
 
+    constructor() {
+        this.endpoint = 'http://localhost:8888/todos';
+        this.auth_token = '';
+    }
+
+    /**
+     * Get HTTP options
+     * @return {object}
+     */
+    getOptions() {
+        return {
+            headers: {
+                'X-Authorization': this.auth_token
+            }
+        }
+    }
+
     /**
      * Dispense a new record
      * @return {object} The new record as object
      */
-    static dispense() {
+    dispense() {
         return {id: '', text: '', status: 'active'};
     }
 
@@ -24,13 +41,8 @@ class TodosModel {
      * @param  {Function} cb Async return
      * @return {[type]}      [description]
      */
-    static findAll(cb) {
-        var options = {
-            headers: {
-                'X-Authorization': TodosModel.auth_token
-            }
-        }
-        axios.get(endpoint, options)
+    findAll(cb) {
+        axios.get(endpoint, this.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -49,13 +61,8 @@ class TodosModel {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    static store(todo, cb) {
-        var options = {
-            headers: {
-                'X-Authorization': TodosModel.auth_token
-            }
-        }
-        axios.post(endpoint, todo, options)
+    store(todo, cb) {
+        axios.post(endpoint, todo, this.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -69,13 +76,8 @@ class TodosModel {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    static remove(todo, cb) {
-        var options = {
-            headers: {
-                'X-Authorization': TodosModel.auth_token
-            }
-        }
-        axios.delete(endpoint + '/' + todo.id, options)
+    remove(todo, cb) {
+        axios.delete(endpoint + '/' + todo.id, this.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb();
@@ -88,21 +90,22 @@ class TodosModel {
      * @param  {Function} cb [description]
      * @return {[type]}      [description]
      */
-    static clearCompleted(cb) {
-        var options = {
-            headers: {
-                'X-Authorization': TodosModel.auth_token
-            }
-        }
-        axios.get(endpoint + '/clear/completed', options)
+    clearCompleted(cb) {
+        axios.get(endpoint + '/clear/completed', this.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
             }
         });
     }
-}
 
-TodosModel.auth_token = '';
+    /**
+     * Generate new id
+     * @return {number} The new id
+     */
+    generateId() {
+        return Math.floor(Math.random() * 1000000) + 1
+    }
+}
 
 export default TodosModel

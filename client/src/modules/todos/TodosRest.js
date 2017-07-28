@@ -1,4 +1,3 @@
-import TodosModel from './TodosModel'
 import Todos from './Todos'
 
 /**
@@ -13,8 +12,8 @@ class TodosRest extends Todos {
      * @return {[type]}      [description]
      */
     loadData(auth_token) {
-        TodosModel.auth_token = auth_token;
-        TodosModel.findAll((todos) => {
+        this.model.auth_token = auth_token;
+        this.model.findAll((todos) => {
             this.setState({ todos: todos });
         });
     }
@@ -41,11 +40,9 @@ class TodosRest extends Todos {
      * @return {[type]} [description]
      */
     save(todo) {
-        TodosModel.store(todo, (result) => {
+        this.model.store(todo, (result) => {
             todo.id ? this.updateTodo(result) : this.addTodo(result);
-
-            // Reset editing
-            this.setState({editing: TodosModel.dispense()});
+            this.edit(this.model.dispense());
         })
     }
 
@@ -55,7 +52,7 @@ class TodosRest extends Todos {
      * @return {[type]}      [description]
      */
     del(todo, i) {
-        TodosModel.remove(todo, () => {
+        this.model.remove(todo, () => {
             this.delLocal(todo, i);
         });
     }
@@ -65,9 +62,8 @@ class TodosRest extends Todos {
      * @return {[type]} [description]
      */
     clearCompleted() {
-        var self = this;
-        TodosModel.clearCompleted((todos) => {
-            self.setState({todos: todos});
+        this.model.clearCompleted((todos) => {
+            this.setState({todos: todos});
         });
     }
 }

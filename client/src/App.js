@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { Switch, Route } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Header from './Header'
-import PageTodos from './PageTodos'
-import PageAuth from './PageAuth'
+import AppComponent from './modules/layouts/components/App'
 
-const cookies = new Cookies();
+//const cookies = new Cookies();
 
 /**
  * Other page example
@@ -21,11 +18,14 @@ class App extends Component {
     constructor(props) {
         super(props);
 
+        // Dependencies
+        this.cookieHandler = new Cookies();
+
         // Initial data
-        var webcookie = cookies.get('nodetodos');
+        var cookie = this.cookieHandler.get('nodetodos');
         this.state = {
-            username: webcookie ? webcookie.username : '',
-            auth_token: webcookie ? webcookie.auth_token : ''
+            username: cookie ? cookie.username : '',
+            auth_token: cookie ? cookie.auth_token : ''
         }
 
         // Component methods
@@ -43,7 +43,7 @@ class App extends Component {
         var expires = 86400000; // 24 hours
         var d = new Date();
         d.setTime(d.getTime() + expires);
-        cookies.set('nodetodos', {username, auth_token}, { path: '/', expires: d });
+        this.cookieHandler.set('nodetodos', {username, auth_token}, { path: '/', expires: d });
         this.setState({
             username: username,
             auth_token: auth_token
@@ -55,7 +55,7 @@ class App extends Component {
      * @return {[type]} [description]
      */
     logout() {
-        cookies.set('nodetodos', {}, { path: '/' });
+        this.cookieHandler.set('nodetodos', {}, { path: '/' });
         this.setState({
             username: '',
             auth_token: ''
@@ -68,19 +68,12 @@ class App extends Component {
      */
     render() {
         return (
-            <div>
-                <Header username={this.state.username}
-                    logout={this.logout} />
-                <Switch>
-                    <Route exact path="/" render={() => (
-                        <PageTodos auth_token={this.state.auth_token} />
-                    )} />
-                    <Route path="/login" render={() => (
-                        <PageAuth login={this.login}
-                            username={this.state.username} />
-                    )} />
-                </Switch>
-            </div>
+            <AppComponent
+                username={this.state.username}
+                auth_token={this.state.auth_token}
+                login={this.login}
+                logout={this.logout}
+            />
         );
     }
 }

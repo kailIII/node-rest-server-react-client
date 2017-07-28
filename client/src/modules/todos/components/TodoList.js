@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import TodoListFilter from './TodoListFilter'
-import TodoListItem from './TodoListItem'
+import TodoListFilterComponent from './TodoListFilter'
+import TodoListItemComponent from './TodoListItem'
 
 /**
  * List todos
@@ -17,19 +17,18 @@ class TodoList extends Component {
             <div>
                 <ul>
                     {this.props.items.map((todo, i) => (
-                        <TodoListItem key={todo.id} {...todo}
-                            editing={this.props.editing}
-                            filter={this.props.filter}
+                        <TodoListItemComponent
+                            key={todo.id} {...todo}
                             toggle={this.props.toggle.bind(null, todo)}
                             edit={this.props.edit.bind(null, todo)}
                             del={this.props.del.bind(null, todo, i)}
-                            save={this.props.save}
                         />
                     ))}
                 </ul>
-                <TodoListFilter setFilter={this.props.setFilter}
+                <TodoListFilterComponent
                     filter={this.props.filter}
                     filters={this.props.filters}
+                    setFilter={this.props.setFilter}
                     clearCompleted={this.props.clearCompleted}
                 />
             </div>
