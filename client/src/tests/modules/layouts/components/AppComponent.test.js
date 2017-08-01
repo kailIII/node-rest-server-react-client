@@ -1,13 +1,13 @@
 import React from 'react';
 import { ReactDOM, render } from 'react-dom';
 import { MemoryRouter } from 'react-router-dom'
-import App from '../App';
+import AppComponent from '../../../../modules/layouts/components/App';
 
-it('render App', () => {
+it('render AppComponent', () => {
     const div = document.createElement('div');
     render(
         <MemoryRouter>
-            <App/>
+            <AppComponent />
         </MemoryRouter>
     , div);
 });

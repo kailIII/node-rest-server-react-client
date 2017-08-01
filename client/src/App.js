@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Cookies from 'universal-cookie';
-import AppComponent from './modules/layouts/components/App'
-
-//const cookies = new Cookies();
+import AppComponent from './modules/layouts/components/App';
 
 /**
  * Other page example
