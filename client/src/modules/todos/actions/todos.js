@@ -1,6 +1,5 @@
 
 import TodosModel from '../TodosModel'
-var model = new TodosModel();
 
 export const load = (todos) => {
     return {
@@ -16,6 +15,47 @@ export const edit = (todo) => {
     };
 }
 
+export const save = (todo) => {
+    return function action (dispatch) {
+        return TodosModel.store(todo, (result) => {
+            todo.id ?
+                dispatch({ type: 'UPDATE_TODO', todo: result })
+                : dispatch({ type: 'ADD_TODO', todo: result });
+            dispatch({ type: 'EDIT_TODO', todo: TodosModel.dispense()});
+            dispatch({ type: 'FETCH_TODOS' });
+        });
+    }
+}
+
+export const del = (todo, i) => {
+    return function action (dispatch) {
+        return TodosModel.remove(todo, (result) => {
+            dispatch({ type: 'DEL_TODO', todo: todo, i: i });
+        });
+    }
+}
+
+export const updateForm = (todo) => {
+    return {
+        type: 'UPDATE_FORM',
+        todo
+    };
+}
+
+export const updateTodo = (todo) => {
+    return {
+        type: 'UPDATE_TODO',
+        todo
+    };
+}
+
+export const addTodo = (todo) => {
+    return {
+        type: 'ADD_TODO',
+        todo
+    };
+}
+
 export const filter = (name) => {
     return {
         type: 'SET_FILTER',
@@ -24,27 +64,20 @@ export const filter = (name) => {
 }
 
 export const fetch = (auth_token) => {
-    console.log('fetch');
+    //console.log('fetch', auth_token);
     return function action (dispatch) {
-        dispatch({ type: 'FETCH_OFFERS' })
-        model.auth_token = auth_token;
-        return model.findAll((todos) => {
-            dispatch(fetchTodosSuccess(todos));
+        TodosModel.auth_token = typeof auth_token !== 'undefined' ?
+            auth_token : TodosModel.auth_token;
+        return TodosModel.findAll((todos) => {
+            dispatch(load(todos));
         });
     }
 }
 
-export const fetchTodosSuccess = (todos) => {
-    console.log('success', todos);
-	return {
-		type: 'FETCH_TODOS_SUCCESS',
-		todos
-	}
-}
-
-export const fetchTodosError = (error) => {
-	return {
-		type: 'FETCH_TODOS_FAILURE',
-		todos: []
-	}
+export const clearCompleted = (todos) => {
+    return function action (dispatch) {
+        return TodosModel.clearCompleted((todos) => {
+            dispatch(load(todos));
+        });
+    }
 }

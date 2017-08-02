@@ -13,7 +13,6 @@ class TodoList extends Component {
      * @return {[type]} [description]
      */
     render() {
-        console.log('list items', this.props.items);
         return (
             <div>
                 <ul>

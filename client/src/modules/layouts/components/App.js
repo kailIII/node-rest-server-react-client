@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import HeaderComponent from './Header'
 import PageTodosComponent from './PageTodos'
 import PageAuthComponent from './PageAuth'
+import '../../../assets/css/index.css'
 
 /**
  * Other page example

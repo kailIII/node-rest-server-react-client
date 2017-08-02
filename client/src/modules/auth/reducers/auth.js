@@ -16,10 +16,6 @@ export default(state, action) => {
 
     switch (action.type) {
 
-        /**
-         * Login user, set cookie
-         * @type {Number}
-         */
         case 'LOGIN':
             var expires = 86400000; // 24 hours
             var d = new Date();
@@ -33,10 +29,6 @@ export default(state, action) => {
                 auth_token: action.auth_token
             };
 
-        /**
-         * Logout user, clear cookie
-         * @type {String}
-         */
         case 'LOGOUT':
             cookieHandler.set('nodetodos', {}, { path: '/' });
             return {

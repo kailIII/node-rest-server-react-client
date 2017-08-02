@@ -12,7 +12,7 @@ class TodoForm extends Component {
      */
     render() {
         return (
-            <form onSubmit={(e) => {e.preventDefault(); this.props.save();}}>
+            <form onSubmit={(e) => {e.preventDefault(); this.props.save(); }}>
                 <label>Add/Edit Todo</label>
                 <input type="hidden" ref="id" value={this.props.id} />
                 <input type="hidden" ref="status" value={this.props.status} />
@@ -20,7 +20,7 @@ class TodoForm extends Component {
                     placeholder="Enter todo..."
                     onChange={this.props.update.bind(null, this.refs)} />
                 <button type="submit">Save</button>
-                <a href="" onClick={(e) => {e.preventDefault(); this.props.reset();}}>new</a>
+                <a href="" onClick={(e) => {e.preventDefault(); this.props.reset(); }}>new</a>
             </form>
         );
     }

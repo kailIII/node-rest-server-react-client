@@ -15,10 +15,6 @@ class TodoForm extends Component {
      */
     constructor(props) {
         super(props);
-        this.state = this.props.editing;
-
-        // Dependencies
-        this.model = new TodosModel();
 
         // Component methods
         this.updateLocalTodo = this.updateLocalTodo.bind(this);
@@ -32,7 +28,7 @@ class TodoForm extends Component {
      * @return {[type]}      [description]
      */
     componentWillReceiveProps(nextProps) {
-        this.setState(nextProps.editing);
+        //this.setState(nextProps.editing);
     }
 
     /**
@@ -44,7 +40,7 @@ class TodoForm extends Component {
             status: refs.status.value,
             text: refs.text.value
         };
-        this.setState(todo);
+        this.props.updateForm(todo);
     }
 
     /**
@@ -52,12 +48,7 @@ class TodoForm extends Component {
      * @return {[type]} [description]
      */
     saveTodo() {
-        var todo = {
-            id: this.state.id,
-            status: this.state.status,
-            text: this.state.text
-        };
-        this.props.save(todo);
+        this.props.save(this.props.editing);
     }
 
     /**
@@ -65,7 +56,7 @@ class TodoForm extends Component {
      * @return {[type]} [description]
      */
     newTodo() {
-        this.setState(this.model.dispense());
+        this.props.edit(TodosModel.dispense())
     }
 
     /**
@@ -75,9 +66,9 @@ class TodoForm extends Component {
     render() {
         return (
             <TodoFormComponent
-                id={this.state.id}
-                status={this.state.status}
-                text={this.state.text}
+                id={this.props.editing.id}
+                status={this.props.editing.status}
+                text={this.props.editing.text}
                 save={this.saveTodo}
                 reset={this.newTodo}
                 update={this.updateLocalTodo}

@@ -1,48 +1,41 @@
 
 import axios from 'axios';
 
-const endpoint = 'http://localhost:8888/todos';
-
 /**
  * Todos model
  *
  * Responsible to comunicate with remote server
  * @type {String}
  */
-class TodosModel {
-
-    constructor() {
-        this.endpoint = 'http://localhost:8888/todos';
-        this.auth_token = '';
-    }
+const TodosModel = {
 
     /**
      * Get HTTP options
      * @return {object}
      */
-    getOptions() {
+    getOptions: () => {
         return {
             headers: {
-                'X-Authorization': this.auth_token
+                'X-Authorization': TodosModel.auth_token
             }
         }
-    }
+    },
 
     /**
      * Dispense a new record
      * @return {object} The new record as object
      */
-    dispense() {
+    dispense: () => {
         return {id: '', text: '', status: 'active'};
-    }
+    },
 
     /**
      * Find all records
      * @param  {Function} cb Async return
      * @return {[type]}      [description]
      */
-    findAll(cb) {
-        return axios.get(endpoint, this.getOptions())
+    findAll: (cb) => {
+        return axios.get(TodosModel.endpoint, TodosModel.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -53,7 +46,7 @@ class TodosModel {
         .catch((error) => {
             cb([]);
         });
-    }
+    },
 
     /**
      * Store record
@@ -61,14 +54,14 @@ class TodosModel {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    store(todo, cb) {
-        axios.post(endpoint, todo, this.getOptions())
+    store: (todo, cb) => {
+        axios.post(TodosModel.endpoint, todo, TodosModel.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
             }
         });
-    }
+    },
 
     /**
      * Remove record
@@ -76,36 +69,39 @@ class TodosModel {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    remove(todo, cb) {
-        axios.delete(endpoint + '/' + todo.id, this.getOptions())
+    remove: (todo, cb) => {
+        axios.delete(TodosModel.endpoint + '/' + todo.id, TodosModel.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb();
             }
         });
-    }
+    },
 
     /**
      * Clear all completed records
      * @param  {Function} cb [description]
      * @return {[type]}      [description]
      */
-    clearCompleted(cb) {
-        axios.get(endpoint + '/clear/completed', this.getOptions())
+    clearCompleted: (cb) => {
+        axios.get(TodosModel.endpoint + '/clear/completed', TodosModel.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
             }
         });
-    }
+    },
 
     /**
      * Generate new id
      * @return {number} The new id
      */
-    generateId() {
+    generateId: () => {
         return Math.floor(Math.random() * 1000000) + 1
     }
 }
+
+TodosModel.endpoint = 'http://localhost:8888/todos';
+TodosModel.auth_token = '';
 
 export default TodosModel

@@ -18,6 +18,9 @@ class Todos extends Component {
                 <TodoForm
                     editing={this.props.editing}
                     save={this.props.save}
+                    edit={this.props.edit}
+                    updateTodo={this.props.updateTodo}
+                    updateForm={this.props.updateForm}
                 />
                 <TodoListComponent
                     items={this.props.items}

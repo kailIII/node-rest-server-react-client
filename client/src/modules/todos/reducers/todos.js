@@ -1,12 +1,11 @@
 
 import TodosModel from '../TodosModel'
-const model = new TodosModel();
 
 export default(state, action) => {
-
+    var i;
     if (typeof state === 'undefined') {
         state = {
-            editing: model.dispense(),
+            editing: TodosModel.dispense(),
             todos: [],
             filter: 'all'
         }
@@ -25,6 +24,45 @@ export default(state, action) => {
             return {
                 editing: action.todo,
                 todos: state.todos,
+                filter: state.filter
+            }
+
+        case 'ADD_TODO':
+            var todos = Object.assign([], state.todos);
+            todos.push(action.todo);
+            return {
+                editing: action.todo,
+                todos: todos,
+                filter: state.filter
+            }
+
+        case 'UPDATE_FORM':
+            return {
+                editing: action.todo,
+                todos: state.todos,
+                filter: state.filter
+            }
+
+        case 'UPDATE_TODO':
+            var todos = Object.assign([], state.todos);
+            i = todos.findIndex(item => item.id === action.todo.id);
+            todos[i] = action.todo;
+            return {
+                editing: state.editing,
+                todos: todos,
+                filter: state.filter
+            }
+
+        case 'DEL_TODO':
+
+            let editing = Object.assign({}, state.editing),
+                todos = Object.assign([], state.todos);
+            todos.splice(action.i, 1);
+            editing = state.editing && state.editing.id === action.todo.id ?
+                TodosModel.dispense() : state.editing;
+            return {
+                editing: editing,
+                todos: todos,
                 filter: state.filter
             }
 
