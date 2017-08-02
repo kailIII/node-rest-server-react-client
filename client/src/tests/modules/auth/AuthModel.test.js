@@ -1,8 +1,7 @@
 import AuthModel from '../../../modules/auth/AuthModel';
 
 it('dispense user', () => {
-    const model = new AuthModel();
     const expected = {id: '', username: ''};
-    const result = model.dispense();
+    const result = AuthModel.dispense();
     expect(result).toEqual(expected);
 });

@@ -10,18 +10,6 @@ import { connect } from 'react-redux';
 class Todos extends Component {
 
     /**
-     * Initialize component with properties
-     * @param  {object} props The properties passed to this component
-     * @return {[type]}       [description]
-     */
-    constructor(props) {
-        super(props);
-
-        // Component methods
-        this.toggle = this.toggle.bind(this);
-    }
-
-    /**
      * Load data on component mount
      * @return {[type]}      [description]
      */
@@ -41,19 +29,6 @@ class Todos extends Component {
     }
 
     /**
-     * Update todo as complete
-     * @return {[type]}      [description]
-     */
-    toggle(todo) {
-        var newTodo = {
-            id: todo.id,
-            status: todo.status === 'active' ? 'completed' : 'active',
-            text: todo.text
-        };
-        this.props.save(newTodo);
-    }
-
-    /**
      * Render component
      * @return {[type]} [description]
      */
@@ -63,15 +38,13 @@ class Todos extends Component {
         });
         return (
             <TodosComponent
-                editing={this.props.editing}
-                addTodo={this.props.addTodo}
-                save={this.props.save}
-                updateTodo={this.props.updateTodo}
-                updateForm={this.props.updateForm}
                 items={items}
+                editing={this.props.editing}
+                save={this.props.save}
+                updateForm={this.props.updateForm}
                 edit={this.props.edit}
                 del={this.props.del}
-                toggle={this.toggle}
+                toggle={this.props.toggle}
                 clearCompleted={this.props.clearCompleted}
                 filter={this.props.filter}
                 setFilter={this.props.setFilter}
@@ -83,11 +56,7 @@ class Todos extends Component {
 
 // Redux mapping
 function mapStateToProps(state, props) {
-    return {
-        editing: state.todos.editing,
-        todos: state.todos.todos,
-        filter: state.todos.filter
-    };
+    return state.todos
 }
 function mapDispatchToProps(dispatch, props) {
     return {
@@ -97,20 +66,14 @@ function mapDispatchToProps(dispatch, props) {
         save: (todo) => {
             dispatch(todosActions.save(todo));
         },
-        addTodo: (todo) => {
-            dispatch(todosActions.addTodo(todo));
-        },
         updateForm: (todo) => {
             dispatch(todosActions.updateForm(todo));
         },
-        updateTodo: (todo) => {
-            dispatch(todosActions.updateTodo(todo));
+        toggle: (todo) => {
+            dispatch(todosActions.toggle(todo));
         },
-        del: (todo, i) => {
-            dispatch(todosActions.del(todo, i));
-        },
-        load: (todos) => {
-            dispatch(todosActions.load(todos));
+        del: (todo) => {
+            dispatch(todosActions.del(todo));
         },
         setFilter: (name) => {
             dispatch(todosActions.filter(name));

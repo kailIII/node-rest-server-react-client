@@ -7,33 +7,29 @@ import axios from 'axios';
  * Responsible to comunicate with remote server
  * @type {String}
  */
-class AuthModel {
-
-    constructor() {
-        this.endpoint = 'http://localhost:8888/auth';
-    }
+const AuthModel = {
 
     /**
      * Dispense a new record
      * @return {object} The new record as object
      */
-    dispense() {
+    dispense: () => {
         return {id: '', username: ''};
-    }
+    },
 
     /**
      * Login user
      * @param  {Function} cb Async return
      * @return {[type]}      [description]
      */
-    login(user, cb) {
-        axios.post(this.endpoint + '/login', user)
+    login: (user, cb) => {
+        axios.post(AuthModel.endpoint + '/login', user)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
             }
         });
-    }
+    },
 
     /**
      * Register user
@@ -41,8 +37,8 @@ class AuthModel {
      * @param  {Function} cb   Async return
      * @return {[type]}        [description]
      */
-    register(user, cb) {
-        axios.post(this.endpoint + '/register', user)
+    register: (user, cb) => {
+        axios.post(AuthModel.endpoint + '/register', user)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -50,5 +46,7 @@ class AuthModel {
         });
     }
 }
+
+AuthModel.endpoint = 'http://localhost:8888/auth'
 
 export default AuthModel

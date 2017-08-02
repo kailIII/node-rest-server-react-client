@@ -18,9 +18,6 @@ class Auth extends Component {
     constructor(props) {
         super(props);
 
-        // Dependencies
-        this.model = new AuthModel();
-
         // Component methods
         this.login = this.login.bind(this);
         this.register = this.register.bind(this);
@@ -35,7 +32,7 @@ class Auth extends Component {
             username: refs.loginUsername.value,
             password: refs.loginPassword.value
         }
-        this.model.login(user, (result) => {
+        AuthModel.login(user, (result) => {
             if (result.auth_token) {
                 this.props.login(user.username, result.auth_token);
             }
@@ -51,8 +48,8 @@ class Auth extends Component {
             username: refs.registerUsername.value,
             password: refs.registerPassword.value
         }
-        this.model.register(user, (auth_token) => {
-            this.setState({
+        AuthModel.register(user, (auth_token) => {
+            console.log({
                 username: user.username,
                 token: auth_token
             });

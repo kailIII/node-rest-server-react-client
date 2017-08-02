@@ -23,15 +23,6 @@ class TodoForm extends Component {
     }
 
     /**
-     * On receive new props (on edit)
-     * @param  {object} nextProps The next component props
-     * @return {[type]}      [description]
-     */
-    componentWillReceiveProps(nextProps) {
-        //this.setState(nextProps.editing);
-    }
-
-    /**
      * Save current state of editing todo
      */
     updateLocalTodo(refs) {

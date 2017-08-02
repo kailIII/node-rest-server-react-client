@@ -1,8 +1,11 @@
 
 import TodosModel from '../TodosModel'
 
-export default(state, action) => {
-    var i;
+export default (state, action) => {
+
+    /**
+     * Initialise todos state
+     */
     if (typeof state === 'undefined') {
         state = {
             editing: TodosModel.dispense(),
@@ -11,8 +14,12 @@ export default(state, action) => {
         }
     }
 
+    /**
+     * Resolve actions
+     */
     switch (action.type) {
 
+        // Load todos
         case 'LOAD_TODOS':
             return {
                 editing: state.editing,
@@ -20,6 +27,7 @@ export default(state, action) => {
                 filter: state.filter
             }
 
+        // Edit todo
         case 'EDIT_TODO':
             return {
                 editing: action.todo,
@@ -27,15 +35,7 @@ export default(state, action) => {
                 filter: state.filter
             }
 
-        case 'ADD_TODO':
-            var todos = Object.assign([], state.todos);
-            todos.push(action.todo);
-            return {
-                editing: action.todo,
-                todos: todos,
-                filter: state.filter
-            }
-
+        // Update todo form
         case 'UPDATE_FORM':
             return {
                 editing: action.todo,
@@ -43,29 +43,7 @@ export default(state, action) => {
                 filter: state.filter
             }
 
-        case 'UPDATE_TODO':
-            var todos = Object.assign([], state.todos);
-            i = todos.findIndex(item => item.id === action.todo.id);
-            todos[i] = action.todo;
-            return {
-                editing: state.editing,
-                todos: todos,
-                filter: state.filter
-            }
-
-        case 'DEL_TODO':
-
-            let editing = Object.assign({}, state.editing),
-                todos = Object.assign([], state.todos);
-            todos.splice(action.i, 1);
-            editing = state.editing && state.editing.id === action.todo.id ?
-                TodosModel.dispense() : state.editing;
-            return {
-                editing: editing,
-                todos: todos,
-                filter: state.filter
-            }
-
+        // Set listing filter
         case 'SET_FILTER':
             return {
                 filter: action.name,
@@ -73,13 +51,7 @@ export default(state, action) => {
                 todos: state.todos
             }
 
-        case 'FETCH_TODOS_SUCCESS':
-            return {
-                editing: state.editing,
-                todos: action.todos,
-                filter: state.filter
-            }
-
+        // Default state
         default:
             return state;
     }
