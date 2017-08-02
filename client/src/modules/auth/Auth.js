@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import AuthModel from './AuthModel'
 import AuthComponent from './components/Auth'
+import * as authActions from './actions/auth';
+import { connect } from 'react-redux';
 
 /**
  * Auth component
@@ -73,4 +75,22 @@ class Auth extends Component {
     }
 }
 
-export default Auth;
+function mapStateToProps(state, props) {
+    return {
+        username: state.auth ? state.auth.username : ''
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        login: (username, auth_token) => {
+            dispatch(authActions.login(username, auth_token));
+        },
+        logout: () => {
+            console.log('dispatch logout')
+            dispatch(authActions.logout());
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);

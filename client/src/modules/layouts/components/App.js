@@ -21,13 +21,13 @@ class App extends Component {
                     username={this.props.username}
                     logout={this.props.logout}
                 />
-                <Switch>
-                    <Route exact path="/" render={() => (
+                <Switch location={this.props.location}>
+                    <Route exact path="/" render={(props) => (
                         <PageTodosComponent
                             auth_token={this.props.auth_token}
                         />
                     )} />
-                    <Route path="/login" render={() => (
+                    <Route path="/login" render={(props) => (
                         <PageAuthComponent
                             login={this.props.login}
                             logout={this.props.logout}
