@@ -11,6 +11,7 @@ class TodoListItem extends Component {
      * @return {[type]} [description]
      */
     render() {
+        console.log('list item', this.props);
         return (
             <li key={this.props.id}>
                 <span className={this.props.status}>

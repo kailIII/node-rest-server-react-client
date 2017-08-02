@@ -42,7 +42,7 @@ class TodosModel {
      * @return {[type]}      [description]
      */
     findAll(cb) {
-        axios.get(endpoint, this.getOptions())
+        return axios.get(endpoint, this.getOptions())
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);

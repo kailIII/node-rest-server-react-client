@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TodosRest from '../../../modules/todos/TodosRest'
+import Todos from '../../../modules/todos/Todos'
 import logo from '../../../assets/images/logo.svg';
 import '../../../assets/css/App.css';
 
@@ -22,7 +22,7 @@ class PageTodos extends Component {
                     <p>Calls REST API using axios js</p>
                 </div>
                 <hr />
-                <TodosRest auth_token={this.props.auth_token} />
+                <Todos auth_token={this.props.auth_token} />
             </div>
         );
     }

@@ -87,7 +87,6 @@ function mapDispatchToProps(dispatch) {
             dispatch(authActions.login(username, auth_token));
         },
         logout: () => {
-            console.log('dispatch logout')
             dispatch(authActions.logout());
         }
     }

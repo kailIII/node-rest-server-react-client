@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import TodosComponent from './components/Todos'
+import * as todosActions from './actions/todos';
+import { connect } from 'react-redux';
 import TodosModel from './TodosModel'
+//var model = new TodosModel();
 
 /**
  * Todos component
@@ -16,23 +19,51 @@ class Todos extends Component {
     constructor(props) {
         super(props);
 
-        // Dependencies
-        this.model = new TodosModel();
-
-        // Initial data
-        this.state = {
-            editing: this.model.dispense(),
-            todos: [],
-            filter: 'all'
-        }
-
         // Component methods
+        this.model = new TodosModel();
         this.toggle = this.toggle.bind(this);
-        this.edit = this.edit.bind(this);
         this.save = this.save.bind(this);
         this.del = this.del.bind(this);
-        this.setFilter = this.setFilter.bind(this);
         this.clearCompleted = this.clearCompleted.bind(this);
+    }
+
+    /**
+     * Load records with or without auth_token
+     * @param  {object} nextProps The next component props
+     * @return {[type]}      [description]
+     */
+    loadData(auth_token) {
+
+        /*
+        this.model.auth_token = auth_token;
+        this.model.findAll((todos) => {
+            if (this.props.todos.length === 0) {
+                this.props.load(todos);
+            }
+        });
+        */
+    }
+
+    /**
+     * Load data on component mount
+     * @return {[type]}      [description]
+     */
+    componentDidMount() {
+        this.props.fetch(this.props.auth_token);
+        //this.loadData(this.props.auth_token);
+    }
+
+    /**
+     * Load records on auth_token
+     * @param  {object} nextProps The next component props
+     * @return {[type]}      [description]
+     */
+    componentWillReceiveProps(nextProps) {
+        console.log(this.props.auth_token, nextProps.auth_token)
+        if (this.props.auth_token !== nextProps.auth_token) {
+            this.props.fetch(nextProps.auth_token);
+        }
+        //this.loadData(nextProps.auth_token);
     }
 
     /**
@@ -49,27 +80,14 @@ class Todos extends Component {
     }
 
     /**
-     * Edit a record
-     * @param  {object} todo The record to be edited
-     * @return {[type]}      [description]
-     */
-    edit(todo) {
-        this.setState({
-            editing: todo
-        });
-    }
-
-    /**
      * Store record
      * @return {[type]} [description]
      */
     save(todo) {
-        var result = Object.assign({}, todo);
-        if (!result.id) {
-            result.id = this.model.generateId();
-        }
-        todo.id ? this.updateTodo(result) : this.addTodo(result);
-        this.edit(this.model.dispense());
+        this.model.store(todo, (result) => {
+            todo.id ? this.updateTodo(result) : this.addTodo(result);
+            this.props.edit(this.model.dispense());
+        })
     }
 
     /**
@@ -78,13 +96,12 @@ class Todos extends Component {
      * @return {[type]}      [description]
      */
     delLocal(todo, i) {
-        let todos = this.state.todos;
+        let editing, todos = this.state.todos;
         todos.splice(i, 1);
-        this.setState({
-            editing: this.state.editing && this.state.editing.id === todo.id ?
-                this.model.dispense() : this.state.editing,
-            todos: todos
-        });
+        editing = this.state.editing && this.state.editing.id === todo.id ?
+            this.model.dispense() : this.state.editing;
+        this.props.edit(editing);
+        this.props.load(todos);
     }
 
     /**
@@ -93,16 +110,8 @@ class Todos extends Component {
      * @return {[type]}      [description]
      */
     del(todo, i) {
-        this.delLocal(todo, i);
-    }
-
-    /**
-     * Set current filter
-     * @param {String} type The filter string
-     */
-    setFilter(type) {
-        this.setState({
-            filter: type
+        this.model.remove(todo, () => {
+            this.delLocal(todo, i);
         });
     }
 
@@ -111,8 +120,9 @@ class Todos extends Component {
      * @return {[type]} [description]
      */
     clearCompleted() {
-        var todos = this.state.todos.filter(item => item.status !== 'completed');
-        this.setState({todos: todos});
+        this.model.clearCompleted((todos) => {
+            this.props.load(todos);
+        });
     }
 
     /**
@@ -123,7 +133,7 @@ class Todos extends Component {
     addTodo(todo) {
         let todos = this.state.todos;
         todos.push(todo);
-        this.setState({todos: todos});
+        this.props.load(todos);
     }
 
     /**
@@ -135,7 +145,7 @@ class Todos extends Component {
         let i, todos = this.state.todos;
         i = todos.findIndex(item => item.id === todo.id);
         todos[i] = todo;
-        this.setState({todos: todos});
+        this.props.load(todos);
     }
 
     /**
@@ -143,24 +153,55 @@ class Todos extends Component {
      * @return {[type]} [description]
      */
     render() {
-        var items = this.state.todos.filter(item => {
-            return !(this.state.filter !== 'all' && item.status !== this.state.filter);
+        console.log(this.props.todos);
+        var items = this.props.todos.filter(item => {
+            return !(this.props.filter !== 'all' && item.status !== this.props.filter);
         });
+        console.log(items);
         return (
             <TodosComponent
-                editing={this.state.editing}
+                editing={this.props.editing}
                 save={this.save}
                 items={items}
-                edit={this.edit}
+                edit={this.props.edit}
                 del={this.del}
                 toggle={this.toggle}
                 clearCompleted={this.clearCompleted}
-                filter={this.state.filter}
-                setFilter={this.setFilter}
+                filter={this.props.filter}
+                setFilter={this.props.setFilter}
                 filters={['all', 'active', 'completed']}
             />
         );
     }
 }
 
-export default Todos;
+
+function mapStateToProps(state, props) {
+    //console.log('todos state', state);
+    //console.log('todos props', props);
+    return {
+        editing: state.todos.editing,
+        todos: state.todos.todos,
+        filter: state.todos.filter
+    };
+}
+
+function mapDispatchToProps(dispatch, props) {
+
+    return {
+        edit: (todo) => {
+            dispatch(todosActions.edit(todo));
+        },
+        load: (todos) => {
+            dispatch(todosActions.load(todos));
+        },
+        setFilter: (name) => {
+            dispatch(todosActions.filter(name));
+        },
+        fetch: (auth_token) => {
+            dispatch(todosActions.fetch(auth_token));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Todos);

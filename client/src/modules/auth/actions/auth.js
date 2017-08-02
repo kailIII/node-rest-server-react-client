@@ -1,5 +1,4 @@
 export const login = (username, auth_token) => {
-    console.log('login:', username, auth_token);
     return {
         type: 'LOGIN',
         username,
