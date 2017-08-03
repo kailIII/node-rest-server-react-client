@@ -120,7 +120,9 @@ class TodosApi {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
         this.auth.isAuthorized(req.headers['x-authorization'], ip, (result) => {
             if (result) return next()
-            console.log('HTTP 401: ' + req.headers['x-authorization'] + ' ' + ip)
+            if (this.logger) {
+                this.logger.log('HTTP 401: ' + req.headers['x-authorization'] + ' ' + ip)
+            }
             res.header('Access-Control-Allow-Origin', '*')
             res.send(401)
         })

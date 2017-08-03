@@ -19,11 +19,12 @@ const AuthModel = {
 
     /**
      * Login user
-     * @param  {Function} cb Async return
-     * @return {[type]}      [description]
+     * @param  {Object}     params  The credentials object
+     * @param  {Function}   cb Result callback
+     * @return {undefined}     Async return
      */
-    login: (user, cb) => {
-        axios.post(AuthModel.endpoint + '/login', user)
+    login: (params, cb) => {
+        axios.post(AuthModel.endpoint + '/login', params)
         .then(res => {
             if (res.status === 200) {
                 cb(res.data);
@@ -34,8 +35,8 @@ const AuthModel = {
     /**
      * Register user
      * @param  {object}   todo The record to store
-     * @param  {Function} cb   Async return
-     * @return {[type]}        [description]
+     * @param  {Function} cb   Result callback
+     * @return {undefined}     Async return
      */
     register: (user, cb) => {
         axios.post(AuthModel.endpoint + '/register', user)

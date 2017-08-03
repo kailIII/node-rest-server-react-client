@@ -11,6 +11,17 @@ class Auth extends Component {
      * @return {[type]} [description]
      */
     render() {
+
+        // Register notification
+        function RegisterNotify(props) {
+            if (props.result && props.result.completed) {
+                if (props.result.id) return (<p>Register ok</p>)
+                else return (<p>Register failed</p>)
+            }
+            return null
+        }
+
+        // Render login or logout
         if (!this.props.username) {
             return (
                 <div className="auth">
@@ -29,6 +40,7 @@ class Auth extends Component {
                         <input type="text" ref="registerUsername" /><br />
                         <label>Password</label>
                         <input type="password" ref="registerPassword" /><br />
+                        <RegisterNotify result={this.props.registerResult} />
                         <button type="submit">Register</button>
                     </form>
                 </div>

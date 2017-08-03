@@ -70,6 +70,7 @@ class Auth {
             if (result.id) return cb({})
             this.users.store(user, (newUser) => {
                 this.changePassword(newUser, user.password, () => {
+                    delete user.password
                     cb(user)
                 })
             })

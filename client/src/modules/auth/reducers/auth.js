@@ -10,7 +10,8 @@ export default(state, action) => {
         var cookie = cookieHandler.get('nodetodos');
         state = {
             username: cookie ? cookie.username : '',
-            auth_token: cookie ? cookie.auth_token : ''
+            auth_token: cookie ? cookie.auth_token : '',
+            registerResult: {id: '', completed: false}
         }
     }
 
@@ -26,14 +27,30 @@ export default(state, action) => {
             }, { path: '/', expires: d });
             return {
                 username: action.username,
-                auth_token: action.auth_token
+                auth_token: action.auth_token,
+                registerResult: state.registerResult
             };
 
         case 'LOGOUT':
             cookieHandler.set('nodetodos', {}, { path: '/' });
             return {
                 username: '',
-                auth_token: ''
+                auth_token: '',
+                registerResult: state.registerResult
+            }
+
+        case 'REGISTER':
+            return {
+                username: '',
+                auth_token: '',
+                registerResult: action.result
+            }
+
+        case 'REGISTER_START':
+            return {
+                username: '',
+                auth_token: '',
+                registerResult: action.result
             }
 
         default:

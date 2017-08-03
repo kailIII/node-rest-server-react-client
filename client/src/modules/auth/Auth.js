@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import AuthModel from './AuthModel'
 import AuthComponent from './components/Auth'
 import * as authActions from './actions/auth';
 import { connect } from 'react-redux';
@@ -28,15 +27,11 @@ class Auth extends Component {
      * @return {[type]} [description]
      */
     login(refs) {
-        var user = {
+        const params = {
             username: refs.loginUsername.value,
-            password: refs.loginPassword.value
+            password:refs.loginPassword.value
         }
-        AuthModel.login(user, (result) => {
-            if (result.auth_token) {
-                this.props.login(user.username, result.auth_token);
-            }
-        });
+        this.props.login(params)
     }
 
     /**
@@ -44,16 +39,11 @@ class Auth extends Component {
      * @return {[type]} [description]
      */
     register(refs) {
-        var user = {
+        const params = {
             username: refs.registerUsername.value,
             password: refs.registerPassword.value
         }
-        AuthModel.register(user, (auth_token) => {
-            console.log({
-                username: user.username,
-                token: auth_token
-            });
-        });
+        this.props.register(params);
     }
 
     /**
@@ -67,25 +57,28 @@ class Auth extends Component {
                 login={this.login}
                 register={this.register}
                 logout={this.props.logout}
+                registerResult={this.props.registerResult}
             />
         )
     }
 }
 
 function mapStateToProps(state, props) {
-    return {
-        username: state.auth ? state.auth.username : ''
-    };
+    return state.auth
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         login: (username, auth_token) => {
-            dispatch(authActions.login(username, auth_token));
+            dispatch(authActions.loginAsync(username, auth_token))
         },
         logout: () => {
-            dispatch(authActions.logout());
-        }
+            dispatch(authActions.logout())
+        },
+        register: (user) => {
+            dispatch(authActions.registerStart())
+            dispatch(authActions.registerAsync(user))
+        },
     }
 }
 
