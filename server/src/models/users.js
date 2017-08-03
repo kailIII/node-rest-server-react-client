@@ -18,11 +18,8 @@ class Users {
      */
     find(username, cb) {
         this.db.query('SELECT * FROM users WHERE username = $1', [username], (err, res) => {
-            if (!err && res.rows.length) {
-                cb(res.rows[0]);
-            } else {
-                cb({});
-            }
+            if (err || res.rows.length) return cb({})
+            cb(res.rows[0])
         });
     }
 
@@ -33,25 +30,20 @@ class Users {
      * @return {[type]}        [description]
      */
     store(user, cb) {
-        var i, sql, values;
+        var sql, values
         if (user.id) {
-            sql = 'UPDATE users SET username = $1 WHERE id = $2';
-            values = [user.username, user.id];
+            sql = 'UPDATE users SET username = $1 WHERE id = $2'
+            values = [user.username, user.id]
         } else {
-            sql = 'INSERT INTO users (username) VALUES ($1) RETURNING id';
-            values = [user.username];
+            sql = 'INSERT INTO users (username) VALUES ($1) RETURNING id'
+            values = [user.username]
         }
         this.db.query(sql, values, (err, res) => {
-            if (!err) {
-                if (!user.id) {
-                    user['id'] = res.rows[0].id;
-                }
-                cb(user);
-            } else {
-                cb({});
-            }
-        });
+            if (err) return cb({})
+            user['id'] = !user.id ? res.rows[0].id : user['id']
+            cb(user)
+        })
     }
 }
 
-module.exports = Users;
+module.exports = Users

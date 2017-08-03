@@ -7,7 +7,7 @@ class Todos {
      * Init Todos model
      */
     constructor(db) {
-        this.db = db;
+        this.db = db
     }
 
     /**
@@ -17,11 +17,8 @@ class Todos {
      */
     findAll(cb) {
         this.db.query('SELECT * FROM todos', (err, res) => {
-            if (!err) {
-                cb(res.rows);
-            } else {
-                cb([]);
-            }
+            if (err) return cb([])
+            cb(res.rows)
         });
     }
 
@@ -33,11 +30,8 @@ class Todos {
      */
     find(id, cb) {
         this.db.query('SELECT * FROM todos WHERE id = $1', [id], (err, res) => {
-            if (!err && res.rows.length) {
-                cb(res.rows[0]);
-            } else {
-                cb({});
-            }
+            if (err || res.rows.length) return cb({})
+            cb(res.rows[0])
         });
     }
 
@@ -48,23 +42,18 @@ class Todos {
      * @return {[type]}        [description]
      */
     store(todo, cb) {
-        var i, sql, values;
+        var sql, values
         if (todo.id) {
             sql = 'UPDATE todos SET text = $1, status = $2 WHERE id = $3';
-            values = [todo.text, todo.status, todo.id];
+            values = [todo.text, todo.status, todo.id]
         } else {
             sql = 'INSERT INTO todos (text, status) VALUES ($1, $2) RETURNING id';
-            values = [todo.text, todo.status];
+            values = [todo.text, todo.status]
         }
         this.db.query(sql, values, (err, res) => {
-            if (!err) {
-                if (!todo.id) {
-                    todo.id = res.rows[0].id;
-                }
-                cb(todo);
-            } else {
-                cb({});
-            }
+            if (err) return cb({})
+            todo['id'] = !todo.id ? res.rows[0].id : todo['id']
+            cb(todo)
         });
     }
 
@@ -76,11 +65,8 @@ class Todos {
      */
     remove(id, cb) {
         this.db.query('DELETE FROM todos WHERE id = $1', [id], (err, res) => {
-            if (!err) {
-                cb();
-            } else {
-                cb();
-            }
+            if (err) return cb(false)
+            cb(true)
         });
     }
 
@@ -90,11 +76,12 @@ class Todos {
      * @return {undefined}      [description]
      */
     clearCompleted(cb) {
-        var values = ['completed'];
+        var values = ['completed']
         this.db.query('DELETE FROM todos WHERE status = $1', values, (err, res) => {
-            cb();
+            if (err) return cb(false)
+            cb(true)
         });
     }
 }
 
-module.exports = Todos;
+module.exports = Todos

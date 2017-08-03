@@ -8,19 +8,16 @@ class AuthApi {
      * Init auth API
      */
     constructor(model) {
-        this.model = model;
+        this.model = model
     }
 
     /**
-     * Validates user access
-     * @param  {[type]}   auth_token  The auth token to check
-     * @param  {Function} cb Async return
-     * @return {[type]}        [description]
+     * HTTP API
+     * @param {[type]} server [description]
      */
-    isAuthorized(auth_token, ip, cb) {
-        this.model.isTokenValid(auth_token, ip, (user) => {
-            cb(user.id ? true : false);
-        });
+    setApi(server) {
+        server.post('/auth/login', this.login.bind(this))
+        server.post('/auth/register', this.register.bind(this))
     }
 
     /**
@@ -31,12 +28,12 @@ class AuthApi {
      * @return {[type]}        [description]
      */
     login(req, res, next) {
-        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
         this.model.login(req.body, ip, (result) => {
+            console.log('AUTH LOGIN: ' + req.body.username + ' ' + ip)
             res.header('Access-Control-Allow-Origin', '*')
-            res.send(result);
-            next();
-        });
+            res.send(result)
+        })
     }
 
     /**
@@ -49,19 +46,21 @@ class AuthApi {
     register(req, res, next) {
         this.model.register(req.body, (user) => {
             res.header('Access-Control-Allow-Origin', '*')
-            res.send(user);
-            next();
-        });
+            res.send(user)
+        })
     }
 
     /**
-     * HTTP API
-     * @param {[type]} server [description]
+     * Validates user access
+     * @param  {[type]}   auth_token  The auth token to check
+     * @param  {Function} cb Async return
+     * @return {[type]}        [description]
      */
-    setApi(server) {
-        server.post('/auth/login', this.login.bind(this));
-        server.post('/auth/register', this.register.bind(this));
+    isAuthorized(auth_token, ip, cb) {
+        this.model.isTokenValid(auth_token, ip, (user) => {
+            cb(user.id ? true : false)
+        })
     }
 }
 
-module.exports = AuthApi;
+module.exports = AuthApi
