@@ -1,5 +1,6 @@
 
 const bcrypt = require('bcrypt')
+const v = require('validator')
 const Users = require('./users')
 
 /**
@@ -22,6 +23,8 @@ class Auth {
      * @return {undefined}  [description]
      */
     isTokenValid(auth_token, ip, cb) {
+        auth_token = v.escape(auth_token === undefined ? '' : auth_token)
+        ip = v.escape(ip)
         var sql = 'SELECT * FROM users WHERE auth_token = $1 AND auth_ip = $2',
             values = [auth_token, ip]
         this.db.query(sql, values, (err, res) => {
@@ -36,6 +39,9 @@ class Auth {
      * @return {undefined}  [description]
      */
     login(user, ip, cb) {
+        user.username = v.escape(user.username === undefined ? '' : user.username)
+        user.password = v.escape(user.password === undefined ? '' : user.password)
+        ip = v.escape(ip)
         var sql = 'SELECT id, username FROM users WHERE username = $1 AND password = $2',
             values = [user.username]
         this.encrypt(user.password, false, (err, hash) => {
@@ -46,9 +52,9 @@ class Auth {
                 user['auth_token'] = this.generateAuthToken()
                 this.storeToken(user, user.auth_token, ip, () => {
                     cb({auth_token: user.auth_token})
-                });
-            });
-        });
+                })
+            })
+        })
     }
 
     /**
@@ -58,13 +64,14 @@ class Auth {
      * @return {[type]}        [description]
      */
     register(user, cb) {
-        var password = user.password;
+        user.username = v.escape(user.username === undefined ? '' : user.username)
+        user.password = v.escape(user.password === undefined ? '' : user.password)
         this.users.find(user.username, (result) => {
-            if (result.id) return cb(false)
-            this.users.store(user, (user2) => {
-                this.changePassword(user2, password, () => {
+            if (result.id) return cb({})
+            this.users.store(user, (newUser) => {
+                this.changePassword(newUser, user.password, () => {
                     cb(user)
-                });
+                })
             })
         })
     }
@@ -77,19 +84,18 @@ class Auth {
      * @return {[type]}        [description]
      */
     changePassword(user, password, cb) {
+        user.username = v.escape(user.username === undefined ? '' : user.username)
+        password = v.escape(password === undefined ? '' : password)
         this.encrypt(password, false, (err, hash) => {
             if (err) return cb({})
             var sql, values
             sql = 'UPDATE users SET password = $1 WHERE id = $2'
             values = [hash, user.id]
             this.db.query(sql, values, (err, res) => {
-                if (!err) {
-                    cb(user)
-                } else {
-                    cb({})
-                }
-            });
-        });
+                if (err) return cb({})
+                cb(user)
+            })
+        })
     }
 
     /**
@@ -100,12 +106,15 @@ class Auth {
      * @return {[type]}        [description]
      */
     storeToken(user, auth_token, ip, cb) {
+        user.id = parseInt(user.id, 10)
+        auth_token = v.escape(auth_token === undefined ? '' : auth_token)
+        ip = v.escape(ip === undefined ? '' : ip)
         var sql= 'UPDATE users SET auth_token = $1, auth_ip = $2 WHERE id = $3',
             values = [auth_token, ip, user.id]
         this.db.query(sql, values, (err, res) => {
             if (err) return cb({})
             cb(user)
-        });
+        })
     }
 
     /**
@@ -133,7 +142,7 @@ class Auth {
         } else {
             bcrypt.hash(string, config.encrypt.salt, cb)
         }
-    };
+    }
 }
 
 module.exports = Auth

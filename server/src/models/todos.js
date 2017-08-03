@@ -1,3 +1,5 @@
+const v = require('validator')
+
 /**
  * Todos model
  */
@@ -29,6 +31,7 @@ class Todos {
      * @return {undefined}  [description]
      */
     find(id, cb) {
+        id = v.escape(id === undefined ? '' : ''+id)
         this.db.query('SELECT * FROM todos WHERE id = $1', [id], (err, res) => {
             if (err || res.rows.length) return cb({})
             cb(res.rows[0])
@@ -43,7 +46,10 @@ class Todos {
      */
     store(todo, cb) {
         var sql, values
+        todo.text = v.escape(todo.text === undefined ? '' : todo.text)
+        todo.status = v.escape(todo.status === undefined ? '' : todo.status)
         if (todo.id) {
+            todo.id = v.escape(todo.id === undefined ? '' : ''+(todo.id))
             sql = 'UPDATE todos SET text = $1, status = $2 WHERE id = $3';
             values = [todo.text, todo.status, todo.id]
         } else {
@@ -64,6 +70,7 @@ class Todos {
      * @return {undefined}  [description]
      */
     remove(id, cb) {
+        id = v.escape(id === undefined ? '' : ''+id)
         this.db.query('DELETE FROM todos WHERE id = $1', [id], (err, res) => {
             if (err) return cb(false)
             cb(true)

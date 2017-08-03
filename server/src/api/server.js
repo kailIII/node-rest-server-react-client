@@ -5,6 +5,15 @@
  */
 const restify = require('restify')
 
+// HTTPS only
+/*
+const https_options = {
+    key: fs.readFileSync('/etc/ssl/self-signed/server.key'),
+    certificate: fs.readFileSync('/etc/ssl/self-signed/server.crt')
+};
+const server = restify.createServer(https_options)
+*/
+
 /**
  * Create REST server
  * @type {Object}

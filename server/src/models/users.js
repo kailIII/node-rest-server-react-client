@@ -1,3 +1,5 @@
+const v = require('validator')
+
 /**
  * Users model
  */
@@ -17,8 +19,9 @@ class Users {
      * @return {undefined}  [description]
      */
     find(username, cb) {
+        username = v.escape(username === undefined ? '' : username)
         this.db.query('SELECT * FROM users WHERE username = $1', [username], (err, res) => {
-            if (err || res.rows.length) return cb({})
+            if (err || !res.rows.length) return cb({})
             cb(res.rows[0])
         });
     }
@@ -31,6 +34,8 @@ class Users {
      */
     store(user, cb) {
         var sql, values
+        user.username = v.escape(user.username === undefined ? '' : user.username)
+        user.id = v.escape(user.id === undefined ? '' : ''+(user.id))
         if (user.id) {
             sql = 'UPDATE users SET username = $1 WHERE id = $2'
             values = [user.username, user.id]

@@ -7,8 +7,9 @@ class AuthApi {
     /**
      * Init auth API
      */
-    constructor(model) {
+    constructor(model, logger = false) {
         this.model = model
+        this.logger = logger
     }
 
     /**
@@ -30,7 +31,10 @@ class AuthApi {
     login(req, res, next) {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
         this.model.login(req.body, ip, (result) => {
-            console.log('AUTH LOGIN: ' + req.body.username + ' ' + ip)
+            if (this.logger) {
+                result.auth_token ? this.logger.log('AUTH LOGIN: ' + req.body.username + ' ' + ip)
+                    : this.logger.log('AUTH FAILED: ' + req.body.username + ' ' + ip)
+            }
             res.header('Access-Control-Allow-Origin', '*')
             res.send(result)
         })

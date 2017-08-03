@@ -10,9 +10,10 @@ class TodosApi {
      * @param  {Boolean} [auth=false] Optional auth
      * @return {Object}               Todos API
      */
-    constructor(model, auth = false) {
+    constructor(model, auth = false, logger = false) {
         this.model = model
         this.auth = auth
+        this.logger = logger
     }
 
     /**
